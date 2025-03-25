@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Query
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, PlainTextResponse
 from PIL import Image, ImageDraw, ImageFont
 import requests
 from io import BytesIO
@@ -21,7 +21,7 @@ FONT_PATH = os.getenv("FONT_PATH", "arial.ttf")
 def root():
     return {"message": "Pillow Image API with Supabase upload is running!"}
 
-@app.get("/generate-and-upload")
+@app.get("/generate-and-upload", response_class=PlainTextResponse)
 def generate_and_upload(
     template: str = Query(...),
     title: str = Query(""),
@@ -80,4 +80,4 @@ def generate_and_upload(
 
     # 5. Return public URL
     public_url = f"{SUPABASE_IMAGE_BASE}{quote(filename)}"
-    return {"success": True, "url": public_url}
+    return public_url
