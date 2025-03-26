@@ -5,6 +5,7 @@ import requests
 from io import BytesIO
 import os
 from dotenv import load_dotenv
+from uuid import uuid4
 from urllib.parse import quote
 
 load_dotenv()
@@ -27,8 +28,7 @@ def generate_and_upload(
     title: str = Query(""),
     content: str = Query(""),
     contact: str = Query(""),
-    logo: str = Query(None),
-    filename: str = Query("output.png")
+    logo: str = Query(None)
 ):
     # 1. Load the template image from Supabase public URL
     base_template_url = f"{SUPABASE_IMAGE_BASE}{quote(template)}"
@@ -62,12 +62,15 @@ def generate_and_upload(
         except Exception as e:
             print("Logo load error:", e)
 
-    # 3. Save to buffer
+    # 3. Generate automatic filename
+    filename = f"{uuid4()}.png"
+
+    # 4. Save to buffer
     output = BytesIO()
     img.save(output, format="PNG")
     output.seek(0)
 
-    # 4. Upload to Supabase
+    # 5. Upload to Supabase
     upload_url = f"{SUPABASE_PROJECT_URL}/storage/v1/object/{SUPABASE_IMAGE_BUCKET}/{quote(filename)}"
     headers = {
         "Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}",
@@ -78,6 +81,6 @@ def generate_and_upload(
     if upload_response.status_code not in [200, 201]:
         return {"error": "Upload failed", "details": upload_response.text}
 
-   # 5. Return public URL in JSON format
+    # 6. Return public URL in JSON format
     public_url = f"{SUPABASE_IMAGE_BASE}{quote(filename)}"
     return JSONResponse(content={"image_url": public_url})
