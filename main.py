@@ -71,16 +71,34 @@ def generate_and_upload(
     output.seek(0)
 
     # 5. Upload to Supabase
+    # 1. Generate automatic filename
+    filename = f"{uuid4()}.png"
+
+    # 2. Build upload URL with /public/
     upload_url = f"{SUPABASE_PROJECT_URL}/storage/v1/object/public/{SUPABASE_IMAGE_BUCKET}/{quote(filename)}"
+
+    # 3. Set headers with BOTH Authorization and apikey
     headers = {
         "Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}",
+        "apikey": SUPABASE_SERVICE_ROLE_KEY,
         "Content-Type": "image/png"
     }
+
+    # 4. Debug print — see what's going on
+    print("Uploading to:", upload_url)
+    print("Headers:", headers)
+
+    # 5. Upload the image buffer
     upload_response = requests.put(upload_url, headers=headers, data=output.getvalue())
 
-    if upload_response.status_code not in [200, 201]:
-        return {"error": "Upload failed", "details": upload_response.text}
+    # 6. Print the Supabase response
+    print("Upload Status Code:", upload_response.status_code)
+    print("Upload Response:", upload_response.text)
 
-    # 6. Return public URL in JSON format
+    # 7. Error handling
+    if upload_response.status_code not in [200, 201]:
+        return JSONResponse(status_code=500, content={"error": "Upload failed", "details": upload_response.text})
+
+    # 8. Return the final public URL to Bubble
     public_url = f"{SUPABASE_IMAGE_BASE}{quote(filename)}"
     return JSONResponse(content={"image_url": public_url})
