@@ -68,7 +68,7 @@ def generate_and_upload(
     output.seek(0)
 
     # 4. Upload to Supabase
-    upload_url = f"{SUPABASE_PROJECT_URL}/storage/v1/object/public/{SUPABASE_IMAGE_BUCKET}/{quote(filename)}"
+    upload_url = f"{SUPABASE_PROJECT_URL}/storage/v1/object/{SUPABASE_IMAGE_BUCKET}/{quote(filename)}"
     headers = {
         "Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}",
         "Content-Type": "image/png"
