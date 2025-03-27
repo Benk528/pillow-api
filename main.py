@@ -5,7 +5,6 @@ import requests
 from io import BytesIO
 import os
 from dotenv import load_dotenv
-from uuid import uuid4
 from urllib.parse import quote
 
 load_dotenv()
@@ -28,7 +27,8 @@ def generate_and_upload(
     title: str = Query(""),
     content: str = Query(""),
     contact: str = Query(""),
-    logo: str = Query(None)
+    logo: str = Query(None),
+    filename: str = Query("output.png")
 ):
     # 1. Load the template image from Supabase public URL
     base_template_url = f"{SUPABASE_IMAGE_BASE}{quote(template)}"
@@ -62,43 +62,22 @@ def generate_and_upload(
         except Exception as e:
             print("Logo load error:", e)
 
-    # 3. Generate automatic filename
-    filename = f"{uuid4()}.png"
-
-    # 4. Save to buffer
+    # 3. Save to buffer
     output = BytesIO()
     img.save(output, format="PNG")
     output.seek(0)
 
-    # 5. Upload to Supabase
-    # 1. Generate automatic filename
-    filename = f"{uuid4()}.png"
-
-    # 2. Build upload URL with /public/
-    upload_url = f"{SUPABASE_PROJECT_URL}/storage/v1/object/public/{SUPABASE_IMAGE_BUCKET}/{quote(filename)}"
-
-    # 3. Set headers with BOTH Authorization and apikey
+    # 4. Upload to Supabase
+    upload_url = f"{SUPABASE_PROJECT_URL}/storage/v1/object/{SUPABASE_IMAGE_BUCKET}/{quote(filename)}"
     headers = {
         "Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}",
-        "apikey": SUPABASE_SERVICE_ROLE_KEY,
         "Content-Type": "image/png"
     }
-
-    # 4. Debug print — see what's going on
-    print("Uploading to:", upload_url)
-    print("Headers:", headers)
-
-    # 5. Upload the image buffer
     upload_response = requests.put(upload_url, headers=headers, data=output.getvalue())
 
-    # 6. Print the Supabase response
-    print("Upload Status Code:", upload_response.status_code)
-    print("Upload Response:", upload_response.text)
-
-    # 7. Error handling
     if upload_response.status_code not in [200, 201]:
-        return JSONResponse(status_code=500, content={"error": "Upload failed", "details": upload_response.text})
+        return {"error": "Upload failed", "details": upload_response.text}
 
-    # 8. Return the final public URL to Bubble
+   # 5. Return public URL in JSON format
     public_url = f"{SUPABASE_IMAGE_BASE}{quote(filename)}"
     return JSONResponse(content={"image_url": public_url})
