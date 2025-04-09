@@ -40,21 +40,18 @@ def generate_and_upload(
     img = Image.open(BytesIO(response.content)).convert("RGBA")
     draw = ImageDraw.Draw(img)
 
-    # 1. Set your brand color (hex or RGB)
-    brand_color = "#2A2E74"
-
-    # 2. Updated font sizes for better visibility
     try:
-        font_title = ImageFont.truetype(FONT_PATH, 80)      # Was 60
-        font_content = ImageFont.truetype(FONT_PATH, 48)    # Was 36
-        font_contact = ImageFont.truetype(FONT_PATH, 36)    # Was 28
+        font_title = ImageFont.truetype(FONT_PATH, 110)      # Was 60 → now bigger + bolder
+        font_content = ImageFont.truetype(FONT_PATH, 72)     # Was 36 → clearer body text
+        font_contact = ImageFont.truetype(FONT_PATH, 48)     # Was 28 → readable contact
     except:
         font_title = font_content = font_contact = ImageFont.load_default()
 
-    # 3. Draw text with brand color
+    brand_color = "#2A2E74"  # Your Falstaff deep blue
+
     draw.text((60, 60), title, font=font_title, fill=brand_color)
-    draw.text((60, 180), content, font=font_content, fill=brand_color)
-    draw.text((60, 300), contact, font=font_contact, fill=brand_color)
+    draw.text((60, 220), content, font=font_content, fill=brand_color)
+    draw.text((60, 380), contact, font=font_contact, fill=brand_color)
 
     # 2. Add logo (if provided)
     if logo:
