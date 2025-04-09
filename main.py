@@ -40,16 +40,21 @@ def generate_and_upload(
     img = Image.open(BytesIO(response.content)).convert("RGBA")
     draw = ImageDraw.Draw(img)
 
+    # 1. Set your brand color (hex or RGB)
+    brand_color = "#2A2E74"
+
+    # 2. Updated font sizes for better visibility
     try:
-        font_title = ImageFont.truetype(FONT_PATH, 60)
-        font_content = ImageFont.truetype(FONT_PATH, 36)
-        font_contact = ImageFont.truetype(FONT_PATH, 28)
+        font_title = ImageFont.truetype(FONT_PATH, 80)      # Was 60
+        font_content = ImageFont.truetype(FONT_PATH, 48)    # Was 36
+        font_contact = ImageFont.truetype(FONT_PATH, 36)    # Was 28
     except:
         font_title = font_content = font_contact = ImageFont.load_default()
 
-    draw.text((60, 60), title, font=font_title, fill="white")
-    draw.text((60, 160), content, font=font_content, fill="white")
-    draw.text((60, 360), contact, font=font_contact, fill="white")
+    # 3. Draw text with brand color
+    draw.text((60, 60), title, font=font_title, fill=brand_color)
+    draw.text((60, 180), content, font=font_content, fill=brand_color)
+    draw.text((60, 300), contact, font=font_contact, fill=brand_color)
 
     # 2. Add logo (if provided)
     if logo:
