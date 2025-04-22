@@ -78,27 +78,47 @@ def generate_and_upload(
     img = Image.open(BytesIO(response.content)).convert("RGBA")
     draw = ImageDraw.Draw(img)
 
-    # Load fonts
+    # Load fonts with system fallback and print available font files
     try:
         font_title = ImageFont.truetype(FONT_PATH, title_size)
         print("✅ Title font loaded:", FONT_PATH, "| Size:", title_size)
     except Exception as e:
         print("⚠️ Title font load failed:", e)
-        font_title = ImageFont.load_default()
+        try:
+            font_title = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", title_size)
+            print("✅ Fallback title font loaded: DejaVuSans-Bold | Size:", title_size)
+        except Exception as e2:
+            print("❌ All title font loading failed. Using default. Error:", e2)
+            font_title = ImageFont.load_default()
 
     try:
         font_content = ImageFont.truetype(FONT_PATH, content_size)
         print("✅ Content font loaded:", FONT_PATH, "| Size:", content_size)
     except Exception as e:
         print("⚠️ Content font load failed:", e)
-        font_content = ImageFont.load_default()
+        try:
+            font_content = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", content_size)
+            print("✅ Fallback content font loaded: DejaVuSans-Bold | Size:", content_size)
+        except Exception as e2:
+            print("❌ All content font loading failed. Using default. Error:", e2)
+            font_content = ImageFont.load_default()
 
     try:
         font_contact = ImageFont.truetype(FONT_BOLD_PATH, contact_size)
         print("✅ Contact font loaded:", FONT_BOLD_PATH, "| Size:", contact_size)
     except Exception as e:
         print("⚠️ Contact font load failed:", e)
-        font_contact = ImageFont.load_default()
+        try:
+            font_contact = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", contact_size)
+            print("✅ Fallback contact font loaded: DejaVuSans-Bold | Size:", contact_size)
+        except Exception as e2:
+            print("❌ All contact font loading failed. Using default. Error:", e2)
+            font_contact = ImageFont.load_default()
+
+    try:
+        print("📁 Current directory contents:", os.listdir("."))
+    except Exception as e:
+        print("❌ Directory listing failed:", e)
 
     # Draw text
     if title:
