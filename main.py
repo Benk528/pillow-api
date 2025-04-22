@@ -93,11 +93,24 @@ def generate_and_upload(
         try:
             logo_response = requests.get(logo_url)
             if logo_response.status_code == 200:
-                logo_img = Image.open(BytesIO(logo_response.content)).convert("RGBA")
+                logo_img = Image.open(BytesIO(logo_response.content))
+                print("Logo fetched. Original mode:", logo_img.mode)
+
+                # Ensure RGBA for transparency
+                if logo_img.mode != "RGBA":
+                    logo_img = logo_img.convert("RGBA")
+
                 logo_img = logo_img.resize((logo_width, logo_height))
+
+                # Ensure main image is RGBA
+                if img.mode != "RGBA":
+                    img = img.convert("RGBA")
+
                 img.paste(logo_img, (logo_x, logo_y), logo_img)
+            else:
+                print(f"Logo fetch failed. Status code: {logo_response.status_code}")
         except Exception as e:
-            print("Logo error:", e)
+            print("Logo processing error:", str(e))
 
     # Save to buffer
     output = BytesIO()
