@@ -15,8 +15,8 @@ SUPABASE_PROJECT_URL = os.getenv("SUPABASE_PROJECT_URL")
 SUPABASE_IMAGE_BUCKET = os.getenv("SUPABASE_IMAGE_BUCKET")
 SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 SUPABASE_IMAGE_BASE = os.getenv("SUPABASE_IMAGE_BASE")
-FONT_PATH = os.getenv("FONT_PATH", "arial.ttf")
-FONT_BOLD_PATH = os.getenv("FONT_BOLD_PATH", "arialbd.ttf")
+FONT_PATH = "fonts/DejaVuSans-Bold.ttf"
+FONT_BOLD_PATH = "fonts/DejaVuSans-Bold.ttf"
 DEFAULT_COLOR = "#000000"
 
 def safe_color(value: str, fallback: str = DEFAULT_COLOR) -> str:
@@ -86,41 +86,17 @@ def generate_and_upload(
     contact_size = int(image_height * 0.05)
 
     # Load fonts with system fallback and print available font files
+    font_path = "fonts/DejaVuSans-Bold.ttf"
     try:
-        font_title = ImageFont.truetype(FONT_PATH, title_size)
-        print("✅ Title font loaded:", FONT_PATH, "| Size:", title_size)
+        font_title = ImageFont.truetype(font_path, title_size)
+        font_content = ImageFont.truetype(font_path, content_size)
+        font_contact = ImageFont.truetype(font_path, contact_size)
+        print("✅ Fonts loaded from:", font_path)
     except Exception as e:
-        print("⚠️ Title font load failed:", e)
-        try:
-            font_title = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", title_size)
-            print("✅ Fallback title font loaded: DejaVuSans-Bold | Size:", title_size)
-        except Exception as e2:
-            print("❌ All title font loading failed. Using default. Error:", e2)
-            font_title = ImageFont.load_default()
-
-    try:
-        font_content = ImageFont.truetype(FONT_PATH, content_size)
-        print("✅ Content font loaded:", FONT_PATH, "| Size:", content_size)
-    except Exception as e:
-        print("⚠️ Content font load failed:", e)
-        try:
-            font_content = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", content_size)
-            print("✅ Fallback content font loaded: DejaVuSans-Bold | Size:", content_size)
-        except Exception as e2:
-            print("❌ All content font loading failed. Using default. Error:", e2)
-            font_content = ImageFont.load_default()
-
-    try:
-        font_contact = ImageFont.truetype(FONT_BOLD_PATH, contact_size)
-        print("✅ Contact font loaded:", FONT_BOLD_PATH, "| Size:", contact_size)
-    except Exception as e:
-        print("⚠️ Contact font load failed:", e)
-        try:
-            font_contact = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", contact_size)
-            print("✅ Fallback contact font loaded: DejaVuSans-Bold | Size:", contact_size)
-        except Exception as e2:
-            print("❌ All contact font loading failed. Using default. Error:", e2)
-            font_contact = ImageFont.load_default()
+        print("❌ Failed to load fonts from local path:", font_path, "| Error:", e)
+        font_title = ImageFont.load_default()
+        font_content = ImageFont.load_default()
+        font_contact = ImageFont.load_default()
 
     try:
         print("📁 Current directory contents:", os.listdir("."))
