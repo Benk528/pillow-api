@@ -76,7 +76,14 @@ def generate_and_upload(
         return {"error": "Template image failed to load", "url": base_template_url}
 
     img = Image.open(BytesIO(response.content)).convert("RGBA")
+    print("🖼 Template size:", img.size)
     draw = ImageDraw.Draw(img)
+
+    # Dynamically scale font sizes based on image height
+    image_width, image_height = img.size
+    title_size = int(image_height * 0.08)
+    content_size = int(image_height * 0.06)
+    contact_size = int(image_height * 0.05)
 
     # Load fonts with system fallback and print available font files
     try:
