@@ -63,6 +63,12 @@ def generate_and_upload(
     logo_width: int = Query(100),
     logo_height: int = Query(100),
 ):
+    print("🔧 RECEIVED PARAMS:")
+    print("Title:", title, "| X:", title_x, "| Y:", title_y, "| Size:", title_size, "| Color:", title_color)
+    print("Content:", content, "| X:", content_x, "| Y:", content_y, "| Size:", content_size, "| Color:", content_color)
+    print("Contact:", contact, "| X:", contact_x, "| Y:", contact_y, "| Size:", contact_size, "| Color:", contact_color)
+    print("Logo:", logo_url, "| X:", logo_x, "| Y:", logo_y, "| Width:", logo_width, "| Height:", logo_height)
+
     # Load base template
     base_template_url = f"{SUPABASE_IMAGE_BASE}{quote(template)}"
     response = requests.get(base_template_url)
