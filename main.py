@@ -58,7 +58,7 @@ def generate_and_upload(
     try:
         font_title = ImageFont.truetype(FONT_PATH, title_size)
         font_content = ImageFont.truetype(FONT_PATH, content_size)
-        font_contact = ImageFont.truetype(FONT_PATH, contact_size)
+        font_contact = ImageFont.truetype(FONT_PATH, contact_size, layout_engine=ImageFont.LAYOUT_BASIC)
     except:
         font_title = font_content = font_contact = ImageFont.load_default()
 
