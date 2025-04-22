@@ -81,10 +81,24 @@ def generate_and_upload(
     # Load fonts
     try:
         font_title = ImageFont.truetype(FONT_PATH, title_size)
+        print("✅ Title font loaded:", FONT_PATH, "| Size:", title_size)
+    except Exception as e:
+        print("⚠️ Title font load failed:", e)
+        font_title = ImageFont.load_default()
+
+    try:
         font_content = ImageFont.truetype(FONT_PATH, content_size)
+        print("✅ Content font loaded:", FONT_PATH, "| Size:", content_size)
+    except Exception as e:
+        print("⚠️ Content font load failed:", e)
+        font_content = ImageFont.load_default()
+
+    try:
         font_contact = ImageFont.truetype(FONT_BOLD_PATH, contact_size)
-    except:
-        font_title = font_content = font_contact = ImageFont.load_default()
+        print("✅ Contact font loaded:", FONT_BOLD_PATH, "| Size:", contact_size)
+    except Exception as e:
+        print("⚠️ Contact font load failed:", e)
+        font_contact = ImageFont.load_default()
 
     # Draw text
     if title:
