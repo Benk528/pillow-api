@@ -96,6 +96,8 @@ def generate_and_upload(
 
     # Add logo
     if logo_url:
+        if logo_url.startswith("//"):
+            logo_url = "https:" + logo_url
         try:
             logo_response = requests.get(logo_url)
             if logo_response.status_code == 200:
