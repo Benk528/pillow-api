@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Query
 from fastapi.responses import StreamingResponse, JSONResponse
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageColor
 import requests
 from io import BytesIO
 import os
@@ -8,6 +8,15 @@ from dotenv import load_dotenv
 from urllib.parse import quote
 
 load_dotenv()
+
+DEFAULT_COLOR = "#000000"
+
+def safe_color(value: str, fallback: str = DEFAULT_COLOR) -> str:
+    try:
+        ImageColor.getrgb(value)
+        return value
+    except:
+        return fallback
 
 app = FastAPI()
 
@@ -63,9 +72,9 @@ def generate_and_upload(
     except:
         font_title = font_content = font_contact = ImageFont.load_default()
 
-    draw.text((title_x, title_y), title, font=font_title, fill=title_color)
-    draw.text((content_x, content_y), content, font=font_content, fill=content_color)
-    draw.text((contact_x, contact_y), contact, font=font_contact, fill=contact_color)
+    draw.text((title_x, title_y), title, font=font_title, fill=safe_color(title_color))
+    draw.text((content_x, content_y), content, font=font_content, fill=safe_color(content_color))
+    draw.text((contact_x, contact_y), contact, font=font_contact, fill=safe_color(contact_color))
 
     if logo:
         try:
