@@ -16,6 +16,7 @@ SUPABASE_IMAGE_BUCKET = os.getenv("SUPABASE_IMAGE_BUCKET")
 SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 SUPABASE_IMAGE_BASE = os.getenv("SUPABASE_IMAGE_BASE")
 FONT_PATH = os.getenv("FONT_PATH", "arial.ttf")
+FONT_BOLD_PATH = os.getenv("FONT_BOLD_PATH", "arialbd.ttf")
 
 @app.get("/")
 def root():
@@ -58,7 +59,7 @@ def generate_and_upload(
     try:
         font_title = ImageFont.truetype(FONT_PATH, title_size)
         font_content = ImageFont.truetype(FONT_PATH, content_size)
-        font_contact = ImageFont.truetype(FONT_PATH, contact_size, layout_engine=ImageFont.LAYOUT_BASIC)
+        font_contact = ImageFont.truetype(FONT_BOLD_PATH, contact_size)
     except:
         font_title = font_content = font_contact = ImageFont.load_default()
 
