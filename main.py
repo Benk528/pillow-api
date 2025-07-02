@@ -107,7 +107,12 @@ def generate_and_upload(
     if title:
         draw.text((title_x, title_y), title, font=font_title, fill=safe_color(title_color))
     if content:
-        draw.text((content_x, content_y), content, font=font_content, fill=safe_color(content_color))
+        import textwrap
+        # Adjust character width based on font size or a fixed max line length
+        wrapped_lines = textwrap.wrap(content, width=40)
+        line_height = font_content.getbbox("A")[3] - font_content.getbbox("A")[1] + 10  # Add spacing
+        for i, line in enumerate(wrapped_lines):
+            draw.text((content_x, content_y + i * line_height), line, font=font_content, fill=safe_color(content_color))
     if contact:
         draw.text((contact_x, contact_y), contact, font=font_contact, fill=safe_color(contact_color))
 
