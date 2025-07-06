@@ -76,14 +76,15 @@ def generate_and_upload(
         return {"error": "Template image failed to load", "url": base_template_url}
 
     img = Image.open(BytesIO(response.content)).convert("RGBA")
+    img = img.resize((1080, 1080))  # Force canvas to standard size
     print("🖼 Template size:", img.size)
     draw = ImageDraw.Draw(img)
 
-    # Dynamically scale font sizes based on image height
+    # Use consistent font sizes
     image_width, image_height = img.size
-    title_size = int(image_height * 0.08)
-    content_size = int(image_height * 0.06)
-    contact_size = int(image_height * 0.05)
+    title_size = 72
+    content_size = 54
+    contact_size = 42
 
     # Load fonts with system fallback and print available font files
     font_path = "fonts/DejaVuSans-Bold.ttf"
@@ -108,8 +109,8 @@ def generate_and_upload(
         draw.text((title_x, title_y), title, font=font_title, fill=safe_color(title_color))
     if content:
         import textwrap
-        # Adjust character width based on font size or a fixed max line length
-        wrapped_lines = textwrap.wrap(content, width=40)
+        # Adjust character width based on canvas size for more flexible layout
+        wrapped_lines = textwrap.wrap(content, width=60)
         line_height = font_content.getbbox("A")[3] - font_content.getbbox("A")[1] + 10  # Add spacing
         for i, line in enumerate(wrapped_lines):
             draw.text((content_x, content_y + i * line_height), line, font=font_content, fill=safe_color(content_color))
