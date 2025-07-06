@@ -83,8 +83,8 @@ def generate_and_upload(
     # Use consistent font sizes
     image_width, image_height = img.size
     title_size = 72
-    content_size = 54
-    contact_size = 42
+    content_size = 48
+    contact_size = 38
 
     # Load fonts with system fallback and print available font files
     font_path = "fonts/DejaVuSans-Bold.ttf"
