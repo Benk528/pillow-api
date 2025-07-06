@@ -109,9 +109,10 @@ def generate_and_upload(
         draw.text((title_x, title_y), title, font=font_title, fill=safe_color(title_color))
     if content:
         import textwrap
-        # Adjust character width based on canvas size for more flexible layout
-        wrapped_lines = textwrap.wrap(content, width=60)
-        line_height = font_content.getbbox("A")[3] - font_content.getbbox("A")[1] + 10  # Add spacing
+        content_size = 28
+        font_content = ImageFont.truetype(font_path, content_size)
+        wrapped_lines = textwrap.wrap(content, width=50)
+        line_height = font_content.getbbox("A")[3] - font_content.getbbox("A")[1] + 8
         for i, line in enumerate(wrapped_lines):
             draw.text((content_x, content_y + i * line_height), line, font=font_content, fill=safe_color(content_color))
     if contact:
