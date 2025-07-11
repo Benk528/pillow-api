@@ -129,7 +129,9 @@ def generate_and_upload(
 
         for line in lines:
             draw.text((x, y), line, font=font, fill=fill)
-            y += font.getsize(line)[1] + 4  # spacing between lines
+            line_bbox = draw.textbbox((0, 0), line, font=font)
+            line_height = line_bbox[3] - line_bbox[1]
+            y += line_height + 4  # spacing between lines
 
     if title:
         draw_text_with_wrap(draw, title, font_title, title_x, title_y, fill=safe_color(title_color), max_width=title_max_width)
