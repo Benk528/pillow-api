@@ -106,7 +106,7 @@ def generate_and_upload(
 
     # Draw text
     if title:
-        draw.text((title_x, title_y), title, font=font_title, fill=safe_color(title_color))
+        draw.text((title_x * 2, title_y * 2), title, font=font_title, fill=safe_color(title_color))
     if content:
         import textwrap
         content_size = 28
@@ -114,9 +114,9 @@ def generate_and_upload(
         wrapped_lines = textwrap.wrap(content, width=50)
         line_height = font_content.getbbox("A")[3] - font_content.getbbox("A")[1] + 8
         for i, line in enumerate(wrapped_lines):
-            draw.text((content_x, content_y + i * line_height), line, font=font_content, fill=safe_color(content_color))
+            draw.text((content_x * 2, content_y * 2 + i * line_height), line, font=font_content, fill=safe_color(content_color))
     if contact:
-        draw.text((contact_x, contact_y), contact, font=font_contact, fill=safe_color(contact_color))
+        draw.text((contact_x * 2, contact_y * 2), contact, font=font_contact, fill=safe_color(contact_color))
 
     # Add logo
     if logo_url:
@@ -132,13 +132,13 @@ def generate_and_upload(
                 if logo_img.mode != "RGBA":
                     logo_img = logo_img.convert("RGBA")
 
-                logo_img = logo_img.resize((logo_width, logo_height))
+                logo_img = logo_img.resize((logo_width * 2, logo_height * 2))
 
                 # Ensure main image is RGBA
                 if img.mode != "RGBA":
                     img = img.convert("RGBA")
 
-                img.paste(logo_img, (logo_x, logo_y), logo_img)
+                img.paste(logo_img, (logo_x * 2, logo_y * 2), logo_img)
             else:
                 print(f"Logo fetch failed. Status code: {logo_response.status_code}")
         except Exception as e:
