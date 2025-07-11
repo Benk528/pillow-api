@@ -39,44 +39,15 @@ def generate_and_upload(
     logo_url: str = Query(None),
     filename: str = Query("output.png"),
 
-    # Title
-    title_x: int = Query(0),
-    title_y: int = Query(0),
-    title_size: int = Query(60),
     title_color: str = Query(DEFAULT_COLOR),
-    title_max_width: int = Query(1000),
-    title_width: int = Query(1000),
-    title_height: int = Query(1000),
-
-    # Content
-    content_x: int = Query(0),
-    content_y: int = Query(0),
-    content_size: int = Query(40),
     content_color: str = Query(DEFAULT_COLOR),
-    content_max_width: int = Query(1000),
-    content_width: int = Query(1000),
-    content_height: int = Query(1000),
-
-    # Contact
-    contact_x: int = Query(0),
-    contact_y: int = Query(0),
-    contact_size: int = Query(30),
     contact_color: str = Query(DEFAULT_COLOR),
-    contact_max_width: int = Query(1000),
-    contact_width: int = Query(1000),
-    contact_height: int = Query(1000),
-
-    # Logo
-    logo_x: int = Query(0),
-    logo_y: int = Query(0),
-    logo_width: int = Query(100),
-    logo_height: int = Query(100),
 ):
     print("🔧 RECEIVED PARAMS:")
-    print("Title:", title, "| X:", title_x, "| Y:", title_y, "| Size:", title_size, "| Color:", title_color)
-    print("Content:", content, "| X:", content_x, "| Y:", content_y, "| Size:", content_size, "| Color:", content_color)
-    print("Contact:", contact, "| X:", contact_x, "| Y:", contact_y, "| Size:", contact_size, "| Color:", contact_color)
-    print("Logo:", logo_url, "| X:", logo_x, "| Y:", logo_y, "| Width:", logo_width, "| Height:", logo_height)
+    print("Title:", title, "| Color:", title_color)
+    print("Content:", content, "| Color:", content_color)
+    print("Contact:", contact, "| Color:", contact_color)
+    print("Logo:", logo_url)
 
     # Load base template
     base_template_url = f"{SUPABASE_IMAGE_BASE}{quote(template)}"
@@ -89,17 +60,12 @@ def generate_and_upload(
     print("🖼 Template size:", img.size)
     draw = ImageDraw.Draw(img)
 
-    # No scaling
-    title_size = title_size
-    content_size = content_size
-    contact_size = contact_size
-
     # Load fonts with system fallback and print available font files
     font_path = "fonts/DejaVuSans-Bold.ttf"
     try:
-        font_title = ImageFont.truetype(font_path, title_size)
-        font_content = ImageFont.truetype(font_path, content_size)
-        font_contact = ImageFont.truetype(font_path, contact_size)
+        font_title = ImageFont.truetype(font_path, 60)
+        font_content = ImageFont.truetype(font_path, 40)
+        font_contact = ImageFont.truetype(font_path, 30)
         print("✅ Fonts loaded from:", font_path)
     except Exception as e:
         print("❌ Failed to load fonts from local path:", font_path, "| Error:", e)
@@ -145,11 +111,11 @@ def generate_and_upload(
             y += line_height + 4
 
     if title:
-        draw_text_within_box(draw, title, font_title, title_x, title_y, title_width, title_height, fill=safe_color(title_color))
+        draw_text_within_box(draw, title, font_title, 50, 50, 1000, 200, fill=safe_color(title_color))
     if content:
-        draw_text_within_box(draw, content, font_content, content_x, content_y, content_width, content_height, fill=safe_color(content_color))
+        draw_text_within_box(draw, content, font_content, 50, 400, 500, 300, fill=safe_color(content_color))
     if contact:
-        draw_text_within_box(draw, contact, font_contact, contact_x, contact_y, contact_width, contact_height, fill=safe_color(contact_color))
+        draw_text_within_box(draw, contact, font_contact, 50, 900, 1000, 150, fill=safe_color(contact_color))
 
     # Add logo
     if logo_url:
@@ -165,13 +131,13 @@ def generate_and_upload(
                 if logo_img.mode != "RGBA":
                     logo_img = logo_img.convert("RGBA")
 
-                logo_img = logo_img.resize((logo_width, logo_height))
+                logo_img = logo_img.resize((150, 150))
 
                 # Ensure main image is RGBA
                 if img.mode != "RGBA":
                     img = img.convert("RGBA")
 
-                img.paste(logo_img, (logo_x, logo_y), logo_img)
+                img.paste(logo_img, (880, 50), logo_img)
             else:
                 print(f"Logo fetch failed. Status code: {logo_response.status_code}")
         except Exception as e:
