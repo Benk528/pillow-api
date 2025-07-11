@@ -114,7 +114,8 @@ def generate_and_upload(
             line = ''
             for word in words:
                 test_line = f"{line} {word}".strip()
-                w, _ = draw.textsize(test_line, font=font)
+                bbox = draw.textbbox((0, 0), test_line, font=font)
+                w = bbox[2] - bbox[0]
                 if w <= max_width:
                     line = test_line
                 else:
