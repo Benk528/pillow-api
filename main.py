@@ -63,6 +63,8 @@ def generate_and_upload(
     logo_width: int = Query(100),
     logo_height: int = Query(100),
 ):
+    scale = 2
+
     print("🔧 RECEIVED PARAMS:")
     print("Title:", title, "| X:", title_x, "| Y:", title_y, "| Size:", title_size, "| Color:", title_color)
     print("Content:", content, "| X:", content_x, "| Y:", content_y, "| Size:", content_size, "| Color:", content_color)
@@ -80,11 +82,11 @@ def generate_and_upload(
     print("🖼 Template size:", img.size)
     draw = ImageDraw.Draw(img)
 
-    # Use consistent font sizes
+    # Use consistent font sizes scaled
     image_width, image_height = img.size
-    title_size = 72
-    content_size = 48
-    contact_size = 38
+    title_size = title_size * scale
+    content_size = content_size * scale
+    contact_size = contact_size * scale
 
     # Load fonts with system fallback and print available font files
     font_path = "fonts/DejaVuSans-Bold.ttf"
@@ -106,17 +108,15 @@ def generate_and_upload(
 
     # Draw text
     if title:
-        draw.text((title_x * 2, title_y * 2), title, font=font_title, fill=safe_color(title_color))
+        draw.text((title_x * scale, title_y * scale), title, font=font_title, fill=safe_color(title_color))
     if content:
         import textwrap
-        content_size = 28
-        font_content = ImageFont.truetype(font_path, content_size)
         wrapped_lines = textwrap.wrap(content, width=50)
         line_height = font_content.getbbox("A")[3] - font_content.getbbox("A")[1] + 8
         for i, line in enumerate(wrapped_lines):
-            draw.text((content_x * 2, content_y * 2 + i * line_height), line, font=font_content, fill=safe_color(content_color))
+            draw.text((content_x * scale, content_y * scale + i * line_height), line, font=font_content, fill=safe_color(content_color))
     if contact:
-        draw.text((contact_x * 2, contact_y * 2), contact, font=font_contact, fill=safe_color(contact_color))
+        draw.text((contact_x * scale, contact_y * scale), contact, font=font_contact, fill=safe_color(contact_color))
 
     # Add logo
     if logo_url:
@@ -132,13 +132,13 @@ def generate_and_upload(
                 if logo_img.mode != "RGBA":
                     logo_img = logo_img.convert("RGBA")
 
-                logo_img = logo_img.resize((logo_width * 2, logo_height * 2))
+                logo_img = logo_img.resize((logo_width * scale, logo_height * scale))
 
                 # Ensure main image is RGBA
                 if img.mode != "RGBA":
                     img = img.convert("RGBA")
 
-                img.paste(logo_img, (logo_x * 2, logo_y * 2), logo_img)
+                img.paste(logo_img, (logo_x * scale, logo_y * scale), logo_img)
             else:
                 print(f"Logo fetch failed. Status code: {logo_response.status_code}")
         except Exception as e:
