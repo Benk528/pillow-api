@@ -45,6 +45,8 @@ def generate_and_upload(
     title_size: int = Query(60),
     title_color: str = Query(DEFAULT_COLOR),
     title_max_width: int = Query(1000),
+    title_width: int = Query(1000),
+    title_height: int = Query(1000),
 
     # Content
     content_x: int = Query(0),
@@ -52,6 +54,8 @@ def generate_and_upload(
     content_size: int = Query(40),
     content_color: str = Query(DEFAULT_COLOR),
     content_max_width: int = Query(1000),
+    content_width: int = Query(1000),
+    content_height: int = Query(1000),
 
     # Contact
     contact_x: int = Query(0),
@@ -59,6 +63,8 @@ def generate_and_upload(
     contact_size: int = Query(30),
     contact_color: str = Query(DEFAULT_COLOR),
     contact_max_width: int = Query(1000),
+    contact_width: int = Query(1000),
+    contact_height: int = Query(1000),
 
     # Logo
     logo_x: int = Query(0),
@@ -106,39 +112,44 @@ def generate_and_upload(
     except Exception as e:
         print("❌ Directory listing failed:", e)
 
-    # Draw text with wrapping based on max_width
-    def draw_text_with_wrap(draw, text, font, x, y, fill=(0, 0, 0), max_width=None):
+    # Draw text with bounding box constraints
+    def draw_text_within_box(draw, text, font, x, y, max_width, max_height, fill=(0, 0, 0)):
         lines = []
-        if max_width:
-            words = text.split(' ')
-            line = ''
-            for word in words:
-                test_line = f"{line} {word}".strip()
-                bbox = draw.textbbox((0, 0), test_line, font=font)
-                w = bbox[2] - bbox[0]
-                if w <= max_width:
-                    line = test_line
-                else:
-                    if line:
-                        lines.append(line)
-                    line = word
-            if line:
-                lines.append(line)
-        else:
-            lines = text.split('\n')
+        words = text.split()
+        current_line = ''
+        for word in words:
+            test_line = current_line + ' ' + word if current_line else word
+            bbox = draw.textbbox((0, 0), test_line, font=font)
+            test_width = bbox[2] - bbox[0]
+            if test_width <= max_width:
+                current_line = test_line
+            else:
+                lines.append(current_line)
+                current_line = word
+        if current_line:
+            lines.append(current_line)
+
+        total_height = 0
+        for line in lines:
+            line_bbox = draw.textbbox((0, 0), line, font=font)
+            line_height = line_bbox[3] - line_bbox[1]
+            total_height += line_height + 4
+
+        if total_height > max_height:
+            print("⚠️ Text exceeds height bounds; may overflow")
 
         for line in lines:
             draw.text((x, y), line, font=font, fill=fill)
             line_bbox = draw.textbbox((0, 0), line, font=font)
             line_height = line_bbox[3] - line_bbox[1]
-            y += line_height + 4  # spacing between lines
+            y += line_height + 4
 
     if title:
-        draw_text_with_wrap(draw, title, font_title, title_x, title_y, fill=safe_color(title_color), max_width=title_max_width)
+        draw_text_within_box(draw, title, font_title, title_x, title_y, title_width, title_height, fill=safe_color(title_color))
     if content:
-        draw_text_with_wrap(draw, content, font_content, content_x, content_y, fill=safe_color(content_color), max_width=content_max_width)
+        draw_text_within_box(draw, content, font_content, content_x, content_y, content_width, content_height, fill=safe_color(content_color))
     if contact:
-        draw_text_with_wrap(draw, contact, font_contact, contact_x, contact_y, fill=safe_color(contact_color), max_width=contact_max_width)
+        draw_text_within_box(draw, contact, font_contact, contact_x, contact_y, contact_width, contact_height, fill=safe_color(contact_color))
 
     # Add logo
     if logo_url:
