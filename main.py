@@ -44,18 +44,21 @@ def generate_and_upload(
     title_y: int = Query(0),
     title_size: int = Query(60),
     title_color: str = Query(DEFAULT_COLOR),
+    title_max_width: int = Query(1000),
 
     # Content
     content_x: int = Query(0),
     content_y: int = Query(0),
     content_size: int = Query(40),
     content_color: str = Query(DEFAULT_COLOR),
+    content_max_width: int = Query(1000),
 
     # Contact
     contact_x: int = Query(0),
     contact_y: int = Query(0),
     contact_size: int = Query(30),
     contact_color: str = Query(DEFAULT_COLOR),
+    contact_max_width: int = Query(1000),
 
     # Logo
     logo_x: int = Query(0),
@@ -103,17 +106,36 @@ def generate_and_upload(
     except Exception as e:
         print("❌ Directory listing failed:", e)
 
-    # Draw text
+    # Draw text with wrapping based on max_width
+    def draw_text_with_wrap(draw, text, font, x, y, fill=(0, 0, 0), max_width=None):
+        lines = []
+        if max_width:
+            words = text.split(' ')
+            line = ''
+            for word in words:
+                test_line = f"{line} {word}".strip()
+                w, _ = draw.textsize(test_line, font=font)
+                if w <= max_width:
+                    line = test_line
+                else:
+                    if line:
+                        lines.append(line)
+                    line = word
+            if line:
+                lines.append(line)
+        else:
+            lines = text.split('\n')
+
+        for line in lines:
+            draw.text((x, y), line, font=font, fill=fill)
+            y += font.getsize(line)[1] + 4  # spacing between lines
+
     if title:
-        draw.text((title_x, title_y), title, font=font_title, fill=safe_color(title_color))
+        draw_text_with_wrap(draw, title, font_title, title_x, title_y, fill=safe_color(title_color), max_width=title_max_width)
     if content:
-        import textwrap
-        wrapped_lines = textwrap.wrap(content, width=50)
-        line_height = font_content.getbbox("A")[3] - font_content.getbbox("A")[1] + 8
-        for i, line in enumerate(wrapped_lines):
-            draw.text((content_x, content_y + i * line_height), line, font=font_content, fill=safe_color(content_color))
+        draw_text_with_wrap(draw, content, font_content, content_x, content_y, fill=safe_color(content_color), max_width=content_max_width)
     if contact:
-        draw.text((contact_x, contact_y), contact, font=font_contact, fill=safe_color(contact_color))
+        draw_text_with_wrap(draw, contact, font_contact, contact_x, contact_y, fill=safe_color(contact_color), max_width=contact_max_width)
 
     # Add logo
     if logo_url:
