@@ -99,7 +99,7 @@ def generate_and_upload(
         for line in lines:
             line_bbox = draw.textbbox((0, 0), line, font=font)
             line_height = line_bbox[3] - line_bbox[1]
-            total_height += line_height + 4
+            total_height += line_height + 10
 
         if total_height > max_height:
             print("⚠️ Text exceeds height bounds; may overflow")
@@ -108,7 +108,7 @@ def generate_and_upload(
             draw.text((x, y), line, font=font, fill=fill)
             line_bbox = draw.textbbox((0, 0), line, font=font)
             line_height = line_bbox[3] - line_bbox[1]
-            y += line_height + 4
+            y += line_height + 10
 
     if title:
         draw_text_within_box(draw, title, font_title, 50, 50, 1000, 200, fill=safe_color(title_color))
