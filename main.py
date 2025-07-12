@@ -42,6 +42,7 @@ def generate_and_upload(
     title_color: str = Query(DEFAULT_COLOR),
     content_color: str = Query(DEFAULT_COLOR),
     contact_color: str = Query(DEFAULT_COLOR),
+    has_right_element: bool = Query(True),
 ):
     print("🔧 RECEIVED PARAMS:")
     print("Title:", title, "| Color:", title_color)
@@ -113,7 +114,13 @@ def generate_and_upload(
     if title:
         draw_text_within_box(draw, title, font_title, 50, 50, 1000, 200, fill=safe_color(title_color))
     if content:
-        draw_text_within_box(draw, content, font_content, 50, 400, 500, 300, fill=safe_color(content_color))
+        if has_right_element:
+            content_x = 50
+            content_max_width = 500
+        else:
+            content_x = 90
+            content_max_width = 900
+        draw_text_within_box(draw, content, font_content, content_x, 400, content_max_width, 300, fill=safe_color(content_color))
     if contact:
         draw_text_within_box(draw, contact, font_contact, 50, 870, 1000, 150, fill=safe_color(contact_color))
 
