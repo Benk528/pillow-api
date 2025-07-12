@@ -115,7 +115,7 @@ def generate_and_upload(
     if content:
         draw_text_within_box(draw, content, font_content, 50, 400, 500, 300, fill=safe_color(content_color))
     if contact:
-        draw_text_within_box(draw, contact, font_contact, 50, 900, 1000, 150, fill=safe_color(contact_color))
+        draw_text_within_box(draw, contact, font_contact, 50, 870, 1000, 150, fill=safe_color(contact_color))
 
     # Add logo
     if logo_url:
